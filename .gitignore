@@ -1,0 +1,13 @@
+.env
+service_account.json
+output/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.ipynb_checkpoints/
+.vscode/
+dummy.py
+Untitled.ipynb
+jobs_today.csv
+scrape_dummy.ipynb

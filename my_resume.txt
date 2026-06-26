@@ -1,0 +1,97 @@
+AI Engineer with 4 years of experience translating business requirements into production-grade 
+Generative AI (Gen AI) systems, agent based workflows, and RAG pipelines for automated decision
+making. Skilled in multi-agent orchestration, vector databases, and integrating foundation models into 
+scalable cloud-native architectures. Focused on reliability, correctness, and real-world deployment 
+through rapid iteration, stakeholder collaboration, and measurable business impact. Strengthened 
+strategic thinking through the McKinsey Forward Program.
+Technical Skills
+Programming: Python, SQL, Cypher
+Generative AI: Agentic AI Applications, Multi-Agent Orchestration, RAG Pipelines, Prompt
+Engineering, LLM Evaluation
+Machine Learning & AI: Regression, Classification, Time Series Analysis, model development, model
+retraining, model evaluation, model deployment, model monitoring, Clustering, Random Forests,
+XGBoost, Deep Learning, Transformers, CNNs, LSTMs, Autoencoders, NLP, Computer Vision
+Libraries and Frameworks: LangChain, LangGraph, LlamaIndex, HuggingFace, Pandas, NumPy,
+Scikit-learn, PyTorch, TensorFlow
+Backend & AI Services: Django, FastAPI, REST APIs, LLM API Integration, Microservices Architecture,
+AI Observability, Model Orchestration, Scalable systems
+Cloud & DevOps: AWS, Containerization (Docker, Kubernetes), Testing, Git, CI/CD, Monitoring &
+Observability, Distributed systems
+Others: MongoDB, Neo4j, Agile (Scrum), Code Reviews, Version Control
+Languages: English (C2), German (Pursuing B1)
+Work Experience
+Data Scientist, Vitafluence.ai
+•
+07.2024 – Current
+Designed and optimized end-to-end data and RAG pipelines integrating structured and unstructured 
+data sources for production AI applications using LangChain.
+•
+Developed scalable workflow orchestration systems for AI services using LangGraph, enabling 
+reliable execution, automated tool routing, and high-throughput processing.
+•
+Integrated graph databases and heterogeneous data sources into analytics pipelines, improving 
+contextual reasoning accuracy by 15%.
+•
+Built monitoring, validation, and observability pipelines to ensure data quality, model reliability, and 
+continuous performance evaluation in production systems.
+•
+Developed cloud-based microservices and scalable backend systems supporting real-time data 
+processing and AI-driven analytics workloads.
+•
+Automated large-scale data processing and annotation workflows, increasing throughput by 10x and 
+reducing manual processing effort by 90%.
+•
+Evaluated emerging AI models and agentic frameworks to identify optimal production solutions for 
+improving model selection efficiency and system performance
+Clinical Data Scientist, Asklepios Kliniken
+02.2022 – 03.2024
+•
+Partnered with clinical stakeholders to design and deploy AI stroke detection system, reducing 
+diagnosis time by 30%
+•
+Optimized model inference pipelines and preprocessing workflows, improving latency 50% for real
+time clinical deployment
+Internship, Universitätsklinikum Hamburg Eppendorf
+•
+02.2023 – 10.2023
+Developed deep learning models using Vision Transformers and Multiple Instance Learning, 
+achieving 97% prediction accuracy in medical imaging tasks
+•
+Designed novel hybrid deep learning architecture combining pretrained transformers with MIL, 
+outperforming baseline models in cancer prognosis
+Data Analyst - Part time, 
+Philips Medical Systems DMC GmbH
+•
+10.2022 – 03.2023
+Analyzed large-scale global CT scanner data using clustering and statistical modeling to identify 
+performance patterns and support data-driven product optimization
+Research Intern, University of Pittsburgh, USA
+•
+01.2019 – 06.2019
+Enhanced control and precision of a stretching-compression mechanism using Arduino for 
+improved sample flexibility testing
+Educational Qualification
+M.Sc. Mechatronics, 
+Technische Universität Hamburg (TUHH)
+Specialization: Intelligent Systems and Robotics
+Awards: Deutschlandstipendium (national scholarship for academic excellence)
+B.Tech. Mechatronics, SASTRA University
+Study Abroad: University of Pittsburgh, USA (01.2019-06.2019)
+Awards: Dean's List Merit Scholarship
+Projects
+10.2019 – 03.2024
+07.2015 – 06.2019
+Predictive maintenance of water pump
+•
+02.2024 – 03.2024
+Designed predictive maintenance data pipelines processing sensor data streams for anomaly 
+detection and failure prediction using machine learning and deep learning techniques.
+Analyzed sensor data to extract actionable insights supporting predictive maintenance decisions
+•
+Unsupervised Anomaly Detection using Brain MRI, 
+Technische Universität Hamburg (TUHH)
+•
+11.2021 – 09.2022
+Developed and benchmarked generative models for anomaly detection in brain MRI data, achieving 
+91% detection accuracy 
+Optimized model hyperparameters, enhancing model accuracy by 36%

@@ -1,0 +1,66 @@
+name: Daily Job Search Pipeline
+
+on:
+  schedule:
+    - cron: '0 6 * * 1-5'    # 7am CET, weekdays
+  workflow_dispatch:           # allow manual run
+
+jobs:
+  run-pipeline:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Cache pip
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('requirements.txt') }}
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Stage 1 — Scrape jobs
+        run: python scraper.py
+        env:
+          ADZUNA_APP_ID:  ${{ secrets.ADZUNA_APP_ID }}
+          ADZUNA_APP_KEY: ${{ secrets.ADZUNA_APP_KEY }}
+
+      - name: Stage 2 — Score with Groq
+        run: python scorer.py
+        env:
+          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+
+      - name: Stage 3 — Push to Google Sheets
+        if: success()
+        run: python sheets_logger.py
+        env:
+          GOOGLE_SERVICE_ACCOUNT: ${{ secrets.GOOGLE_SERVICE_ACCOUNT }}
+          SHEET_NAME:             ${{ secrets.SHEET_NAME }}
+
+      - name: Upload CSVs as artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: job-results-${{ github.run_id }}
+          path: output/
+          retention-days: 7
+
+      - name: Print shortlist summary
+        if: success()
+        run: |
+          python -c "
+          import pandas as pd
+          df = pd.read_csv('output/shortlist.csv')
+          print('=== TOP MATCHES ===')
+          print(f'Total: {len(df)} jobs')
+          print(df[['title','company','score']].head(10).to_string(index=False))
+          "

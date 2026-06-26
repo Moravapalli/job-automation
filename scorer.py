@@ -1,0 +1,192 @@
+# scorer.py — production-ready AI job scorer
+from dotenv import load_dotenv
+import os, json, time, pandas as pd
+from groq import Groq
+load_dotenv()
+
+
+client = Groq(api_key=os.getenv("GROQ_API_KEY"))
+
+MODEL     = "llama-3.1-8b-instant"
+MIN_SCORE = 7
+
+with open("my_resume.txt") as f:
+    MY_RESUME = f.read()
+
+# ── Scoring prompt ────────────────────────────────────────────────────
+SYSTEM  = """You are an expert technical recruiter and career coach.
+You evaluate job listings against a candidate's resume with precision and honesty. 
+The resume and job description may be in English or German.
+Understand both languages and map equivalent skills across languages.
+You always respond with valid JSON only — no preamble, no markdown, no explanation outside the JSON."""
+
+def build_prompt(row):
+    return f"""Score this job listing for the candidate below. Be honest — a bad match should score 2-3, not 5-6.
+
+CANDIDATE RESUME:
+{MY_RESUME}
+
+JOB LISTING:
+Title:       {row.get('title', 'N/A')}
+Company:     {row.get('company', 'N/A')}
+Location:    {row.get('location', 'N/A')}
+Description: {str(row.get('description', ''))[:2000]}
+
+SCORING CRITERIA:
+- Skills match (40%): Do their tech stack and tools match the JD keywords?
+- Seniority match (20%): Is the level appropriate for their experience?
+- Domain match (20%): Is the industry/domain relevant to their background?
+- Location/remote (10%): Does the location work for the candidate?
+- Growth potential (10%): Does this role offer career progression?
+
+Return ONLY this JSON — nothing else:
+{{
+  "score": <integer 1-10>,
+  "skills_match": <integer 1-10>,
+  "seniority_match": <integer 1-10>,
+  "highlights": ["top reason 1", "top reason 2"],
+  "concerns": ["concern 1"],
+  "reason": "<2 sentence summary of fit>",
+  "apply": <true if score >= 7, else false>
+}}"""
+
+# ── Scorer with retry + error handling ───────────────────────────────
+# def score_job(row, retries=2):
+#     for attempt in range(retries + 1):
+#         try:
+#             msg = client.messages.create(
+#                 model="claude-haiku-4-5-20251001",  # haiku = fast + cheap for scoring
+#                 max_tokens=300,
+#                 system=SYSTEM_PROMPT,
+#                 messages=[{"role": "user", "content": build_prompt(row)}]
+#             )
+#             raw = msg.content[0].text.strip()
+
+#             # Strip markdown fences if Claude adds them
+#             if raw.startswith("```"):
+#                 raw = raw.split("```")[1]
+#                 if raw.startswith("json"):
+#                     raw = raw[4:]
+#             raw = raw.strip()
+
+#             result = json.loads(raw)
+
+#             return {
+#                 "score":            result.get("score", 0),
+#                 "skills_match":     result.get("skills_match", 0),
+#                 "seniority_match":  result.get("seniority_match", 0),
+#                 "highlights":       " | ".join(result.get("highlights", [])),
+#                 "concerns":         " | ".join(result.get("concerns", [])),
+#                 "reason":           result.get("reason", ""),
+#                 "apply":            result.get("apply", False),
+#                 "input_tokens":     msg.usage.input_tokens,
+#                 "output_tokens":    msg.usage.output_tokens,
+#             }
+
+#         except json.JSONDecodeError:
+#             print(f"  ✗ JSON parse error on attempt {attempt+1} for {row.get('title','?')}")
+#             if attempt == retries:
+#                 return _empty_score()
+#             time.sleep(2)
+
+#         except Exception as e:
+#             print(f"  ✗ Error: {e}")
+#             return _empty_score()
+
+
+def score_job(row, retries=3):
+    for attempt in range(retries):
+        try:
+            response = client.chat.completions.create(
+                model=MODEL,
+                messages=[
+                    {"role": "system", "content": SYSTEM},
+                    {"role": "user",   "content": build_prompt(row)},
+                ],
+                temperature=0.1,
+                max_tokens=300,
+            )
+            raw = response.choices[0].message.content.strip()
+
+            # Strip markdown fences
+            if "```" in raw:
+                raw = raw.split("```")[1]
+                if raw.startswith("json"):
+                    raw = raw[4:]
+
+            # Extract JSON block
+            start = raw.find("{")
+            end   = raw.rfind("}") + 1
+            raw   = raw[start:end]
+
+            result = json.loads(raw)
+            return {
+                "score":        result.get("score", 0),
+                "skills_match": result.get("skills_match", 0),
+                "highlights":   " | ".join(result.get("highlights", [])),
+                "concerns":     " | ".join(result.get("concerns", [])),
+                "reason":       result.get("reason", ""),
+                "apply":        result.get("apply", False),
+            }
+
+        except json.JSONDecodeError:
+            print(f"  ✗ Bad JSON (attempt {attempt+1}) — retrying...")
+            time.sleep(2)
+        except Exception as e:
+            print(f"  ✗ Error: {e}")
+            time.sleep(5)
+
+    return {
+        "score": 0, "skills_match": 0,
+        "highlights": "", "concerns": "scoring failed",
+        "reason": "error", "apply": False,
+    }
+
+
+def _empty_score():
+    return {
+        "score": 0, "skills_match": 0, "seniority_match": 0,
+        "highlights": "", "concerns": "scoring failed",
+        "reason": "Could not score this listing", "apply": False,
+        "input_tokens": 0, "output_tokens": 0
+    }
+
+# ── Main ──────────────────────────────────────────────────────────────
+jobs  = pd.read_csv("jobs_today.csv")
+jobs  = jobs[jobs["title"].notna()].reset_index(drop=True)
+total = len(jobs)
+print(f"Scoring {total} jobs with Groq ({MODEL})...\n")
+
+results    = []
+start_time = time.time()
+
+for i, row in jobs.iterrows():
+    title   = str(row.get("title",   "?"))[:50]
+    company = str(row.get("company", "?"))[:30]
+    print(f"[{i+1}/{total}] {title} @ {company}", end=" ... ", flush=True)
+
+    result = score_job(row)
+    results.append(result)
+    print(f"score: {result['score']}/10")
+    time.sleep(0.3)
+
+scored    = pd.concat([jobs, pd.DataFrame(results)], axis=1)
+shortlist = scored[scored["score"] >= MIN_SCORE].sort_values("score", ascending=False)
+
+scored.to_csv("output/jobs_scored.csv", index=False)
+shortlist.to_csv("output/shortlist.csv", index=False)
+
+elapsed = int(time.time() - start_time)
+print(f"""
+╔══════════════════════════════════╗
+  Groq scoring complete ({elapsed}s)
+  Model:        {MODEL}
+  Total scored: {total}
+  Shortlisted:  {len(shortlist)}  (score >= {MIN_SCORE})
+  Cost:         $0.00
+╚══════════════════════════════════╝
+""")
+
+cols      = ["title", "company", "location", "score", "reason", "job_url"]
+available = [c for c in cols if c in shortlist.columns]
+print(shortlist[available].head(10).to_string(index=False))
