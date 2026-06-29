@@ -110,7 +110,7 @@ on:
 
 ## Project structure
 ```text
-job-pipeline/
+job-automation/
 ├── .github/
 │   └── workflows/
 │       └── pipeline.yml
