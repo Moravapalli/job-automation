@@ -4,7 +4,7 @@ Scrapes jobs daily, scores them against your resume with AI, pushes matches to G
 
 ## What it does
 
-1. Scrapes ~300 fresh jobs (last 24h) from LinkedIn, Indeed, Arbeitnow, Adzuna
+1. Scrape fresh jobs (last 24h) from LinkedIn, Indeed, Arbeitnow, Adzuna
 2. Scores each against your resume using Groq (free Llama 3.1)
 3. Pushes jobs scoring ≥7 to a Google Sheet
 4. Runs every weekday at 6 AM automatically
