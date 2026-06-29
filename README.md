@@ -50,7 +50,7 @@ python scorer.py    # ~30 min for ~300 jobs
 git init
 git add .
 git commit -m "initial"
-gh repo create job-pipeline --private --push --source=.
+gh repo create job-scrape-and-score --private --push --source=.
 ```
 
 ### 6. Add GitHub Secrets
@@ -110,7 +110,7 @@ on:
 
 ## Project structure
 ```text
-job-automation/
+job-scrape-and-score/
 ├── .github/
 │   └── workflows/
 │       └── pipeline.yml
