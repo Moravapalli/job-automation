@@ -2,7 +2,8 @@ name: Daily Job Search Pipeline
 
 on:
   schedule:
-    - cron: '0 6 * * 1-5'    # 7am CET, weekdays
+    - cron: '0 4 * * 1-5'
+    - cron: '20 9 * * *' 
   workflow_dispatch:           # allow manual run
 
 jobs:
