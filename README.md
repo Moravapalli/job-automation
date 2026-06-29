@@ -109,6 +109,7 @@ on:
 ```
 
 ## Project structure
+```text
 job-pipeline/
 ├── .github/
 │   └── workflows/
@@ -119,4 +120,5 @@ job-pipeline/
 ├── requirements.txt
 ├── README.md
 ├── .gitignore
+```
 
