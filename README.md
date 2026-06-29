@@ -109,3 +109,14 @@ on:
 ```
 
 ## Project structure
+job-pipeline/
+├── .github/
+│   └── workflows/
+│       └── pipeline.yml
+├── scraper.py
+├── scorer.py
+├── sheets_logger.py
+├── requirements.txt
+├── README.md
+├── .gitignore
+
